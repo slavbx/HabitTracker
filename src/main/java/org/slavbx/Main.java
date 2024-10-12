@@ -232,7 +232,7 @@ public class Main {
             }
             editHabit(habit.getName(), date);
         } else {
-            System.out.println("Привычка не найдена");
+            System.out.println("Привычка не найдена ");
             manageHabit(date);
         }
     }
