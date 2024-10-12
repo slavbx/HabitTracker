@@ -28,9 +28,12 @@ public class Main {
     }
 
     static void init() {
+        userRepository.save(new User("admin", "admin", "admin", User.Level.ADMIN)); //Встроенный администратор
         User user = new User("slav", "slav", "slav", User.Level.USER);
         userService.save(user);
-        habitService.save(new Habit("name", "desc", Habit.Frequency.DAILY, user));
+        Habit habit = new Habit("name", "desc", Habit.Frequency.DAILY, user);
+        habitService.save(habit);
+        habitService.markAsCompleted(habit);
     }
 
     static void start() { //Начальное меню
@@ -62,7 +65,7 @@ public class Main {
             String password = scanner.next();
 
             if (userService.authorize(email, password)) {
-                System.out.println("Вход выполнен\n");
+                System.out.println("Вход выполнен");
                 //Попадаем в нужное меню в зависимости от привилегий
                 if (userService.getAuthorizedUser().getLevel() == User.Level.ADMIN) {
                     actionsAdmin();
@@ -290,7 +293,7 @@ public class Main {
             int day = inputInt("Введите день: ");
             int days = inputInt("Введите количество дней: ");
             LocalDate start = LocalDate.of(year, month, day);
-            LocalDate end = LocalDate.of(year, month, day).plusDays(days);
+            LocalDate end = LocalDate.of(year, month, day).plusDays(days - 1);
             habitService.showHabitStats(habit, start, end);
             System.out.println("\nВведите любую команду для возврата:");
             scanner.next();

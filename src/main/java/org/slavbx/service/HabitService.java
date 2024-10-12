@@ -5,6 +5,7 @@ import org.slavbx.model.User;
 import org.slavbx.repository.HabitRepository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,13 +33,33 @@ public class HabitService {
     }
 
     public void markAsCompleted(Habit habit) {
-        habit.getCompletionDates().add(LocalDate.now());
+        if (habit.getFreq() == Habit.Frequency.DAILY) {
+            habit.getCompletionDates().add(LocalDate.now());
+        } else { //WEEKLY
+            List <LocalDate> dates = new ArrayList<>();
+            for (int i = 0; i < 7; i++) { //Заполняем сразу на неделю вперёд
+                dates.add(LocalDate.now().plusDays(i));
+            }
+            habit.getCompletionDates().addAll(dates);
+        }
+
     }
 
-    public long getCompletionsInPeriod(Habit habit, LocalDate startDate, LocalDate endDate) {
+    public long getCompletionsInPeriod(Habit habit, LocalDate start, LocalDate end) {
+        if (habit.getFreq() == Habit.Frequency.DAILY) {
+            return getCompletionDaysInPeriod(habit, start, end);
+        } else { //WEEKLY
+            long completionsDays = getCompletionDaysInPeriod(habit, start, end);
+            long completions = completionsDays / 7;
+            if (completionsDays % 7 > 0) completions++; //Часть отмеченной недели, вошедшая в период
+            return completions;
+        }
+    }
+
+    public long getCompletionDaysInPeriod(Habit habit, LocalDate start, LocalDate end) {
         return habit.getCompletionDates().stream()
-                .filter(date -> !date.isBefore(startDate) && !date.isAfter(endDate))
-                .count();
+                    .filter(date -> !date.isBefore(start) && !date.isAfter(end))
+                    .count();
     }
 
     public long getStreak(Habit habit) {
@@ -53,6 +74,9 @@ public class HabitService {
                 break;
             }
         }
+        if (habit.getFreq() == Habit.Frequency.WEEKLY) {
+            streak = streak / 7;
+        }
         return streak;
     }
 
@@ -61,16 +85,17 @@ public class HabitService {
         if (totalDays <= 0) {
             return 0;
         }
-        long completions = getCompletionsInPeriod(habit, start, end);
-        return (double) completions / totalDays * 100;
+        return (double) getCompletionDaysInPeriod(habit, start, end) / totalDays * 100;
     }
 
     public void showHabitStats(Habit habit, LocalDate start, LocalDate end) {
         long completions = getCompletionsInPeriod(habit, start, end);
+        long completionDays = getCompletionDaysInPeriod(habit, start, end);
         double successRate = getSuccessRate(habit, start, end);
         long streak = getStreak(habit);
         System.out.println("\nСтатистика: ");
         System.out.println("Выполнений за период: " + completions);
+        System.out.println("Дней под выполнением за период: " + completionDays);
         System.out.println("Процент успешного выполнения: " + successRate + "%");
         System.out.println("Текущая серия выполнения: " + streak);
     }

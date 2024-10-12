@@ -11,7 +11,6 @@ public class UserRepositoryCore implements UserRepository {
 
     public UserRepositoryCore() {
         this.users = new HashSet<>();
-        save(new User("admin", "admin", "admin", User.Level.ADMIN)); //Встроенный администратор
     }
 
     @Override

@@ -25,22 +25,22 @@ class HabitServiceTest {
     @InjectMocks
     HabitService habitService;
     User user;
+    Habit habit;
 
     @BeforeEach
     void init() {
         user = new User("user@mail.com", "psw", "username", User.Level.USER);
+        habit = new Habit("name", "desc", Habit.Frequency.DAILY, user);
     }
 
     @Test
     void save() {
-        Habit habit = new Habit("name", "desc", Habit.Frequency.DAILY, user);
         habitService.save(habit);
         Mockito.verify(habitRepository).save(habit); //Проверяем, что был вызван нужный метод с нужным аргументом
     }
 
     @Test
     void findHabitByName() {
-        Habit habit = new Habit("name", "desc", Habit.Frequency.DAILY, user);
         Mockito.when(habitRepository.findByName("name")).thenReturn(Optional.of(habit));
         assertThat(habitService.findHabitByName("name")).isEqualTo(Optional.of(habit));
     }
@@ -53,7 +53,6 @@ class HabitServiceTest {
 
     @Test
     void findHabitByUser() {
-        Habit habit = new Habit("name", "desc", Habit.Frequency.DAILY, user);
         List<Habit> habits = new ArrayList<>();
         habits.add(habit);
         Mockito.when(habitRepository.findByUser(user, LocalDate.now())).thenReturn(habits);
@@ -62,28 +61,28 @@ class HabitServiceTest {
 
     @Test
     void markAsCompleted() {
-        Habit habit = new Habit("name", "desc", Habit.Frequency.DAILY, user);
         habitService.markAsCompleted(habit);
         assertThat(habit.getCompletionDates()).contains(LocalDate.now());
     }
 
     @Test
     void getCompletionsInPeriod() {
-        Habit habit = new Habit("name", "desc", Habit.Frequency.DAILY, user);
         habitService.markAsCompleted(habit);
         assertThat(habitService.getCompletionsInPeriod(habit, LocalDate.now().minusDays(2), LocalDate.now())).isEqualTo(1L);
+
+        habit = new Habit("name", "desc", Habit.Frequency.WEEKLY, user);
+        habitService.markAsCompleted(habit);
+        assertThat(habitService.getCompletionsInPeriod(habit, LocalDate.now(), LocalDate.now().plusDays(6))).isEqualTo(1L);
     }
 
     @Test
     void getSuccessRate() {
-        Habit habit = new Habit("name", "desc", Habit.Frequency.DAILY, user);
         habitService.markAsCompleted(habit);
         assertThat(habitService.getSuccessRate(habit, LocalDate.now(), LocalDate.now())).isEqualTo(100.0d);
     }
 
     @Test
     void getStreak() {
-        Habit habit = new Habit("name", "desc", Habit.Frequency.DAILY, user);
         habitService.markAsCompleted(habit);
         assertThat(habitService.getStreak(habit)).isEqualTo(1);
     }
