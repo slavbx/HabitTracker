@@ -55,7 +55,7 @@ public class Main {
         System.out.print("--Вход\n" + "Введите email: ");
         String email = scanner.next();
         if (userService.findUserByEmail(email).isEmpty()) {
-            System.out.println("Ошибка. Пользователь с таким email не зарегистрирован\n");
+            System.out.println("Ошибка. Пользователь с таким email не зарегистрирован \n");
             start();
         } else {
             System.out.print("Введите пароль: ");
