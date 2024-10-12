@@ -1,6 +1,5 @@
 package org.slavbx;
 
-
 import org.slavbx.model.Habit;
 import org.slavbx.model.User;
 import org.slavbx.repository.HabitRepository;
@@ -28,7 +27,7 @@ public class Main {
         start();
     }
 
-    static void init() { //Начальное меню
+    static void init() {
         User user = new User("slav", "slav", "slav", User.Level.USER);
         userService.save(user);
         habitService.save(new Habit("name", "desc", Habit.Frequency.DAILY, user));
