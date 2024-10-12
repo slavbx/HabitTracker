@@ -5,7 +5,7 @@ public class User {
     private String email;
     private String password;
     private String name;
-    private Level level;
+    private final Level level;
 
     public enum Level {
         USER, ADMIN
@@ -48,7 +48,7 @@ public class User {
 
     @Override
     public int hashCode() {
-        return email.hashCode();// + password.hashCode();
+        return email.hashCode() + password.hashCode();
     }
 
     @Override
@@ -59,7 +59,7 @@ public class User {
             return false;
         }
         User other = (User) obj;
-        return other.getEmail().equals(this.getEmail()); //&& other.getPassword().equals(this.getPassword());
+        return other.getEmail().equals(this.getEmail()) && other.getPassword().equals(this.getPassword());
     }
 
     @Override

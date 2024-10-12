@@ -36,7 +36,7 @@ public class UserService {
         Optional<User> optionalUser = this.findUserByEmail(email);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            if (user.hashCode() == email.hashCode()) { // + password.hashCode()
+            if (user.hashCode() == email.hashCode() + password.hashCode()) {
                 this.setAuthorizedUser(user);
                 return true;
             }

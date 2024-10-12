@@ -40,7 +40,7 @@ public class Main {
                 Введите для продолжения:\s
                 1 - Вход
                 2 - Регистрация
-                0 - Выход""");
+                0 - Завершение работы""");
         switch (scanner.next()) {
             case "1" -> signIn();
             case "2" -> signUp();
@@ -124,12 +124,23 @@ public class Main {
                 "0 - Назад");
         switch (scanner.next()) {
             case "1" -> editUserField(user, h -> h.setName(scanner.next()), "имя");
-            case "2" -> editUserField(user, h -> h.setEmail(scanner.next()), "email");
-            case "3" -> editUserField(user, h -> h.setPassword(scanner.next()), "пароль");
+            case "2" -> {
+                editUserField(user, h -> h.setEmail(scanner.next()), "email");
+                userService.authorize(user.getEmail(), user.getPassword());
+                editProfile(user);
+            }
+            case "3" -> {
+                editUserField(user, h -> h.setPassword(scanner.next()), "пароль");
+                userService.authorize(user.getEmail(), user.getPassword());
+                editProfile(user);
+            }
             case "0" -> actionsUser();
-            default -> System.out.println("Неверная команда\n");
+            default -> {
+                System.out.println("Неверная команда\n");
+                editProfile(user);
+            }
         }
-        editProfile(user);
+
     }
 
     public static void editUserField(User user, Consumer<User> consumer, String field) {
