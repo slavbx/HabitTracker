@@ -2,35 +2,32 @@ package org.slavbx.repository;
 
 import org.slavbx.model.User;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class UserRepositoryCore implements UserRepository {
-    private final HashSet<User> users;
+    private final Map<String, User> users;
 
     public UserRepositoryCore() {
-        this.users = new HashSet<>();
+        this.users = new HashMap<>();
     }
 
     @Override
-    public void save(User user) {
-        users.add(user);
+    public void save(String email, User user) {
+        users.put(email, user);
     }
 
     @Override
     public void deleteByEmail(String email) {
-        Optional<User> optUser = findByEmail(email);
-        optUser.ifPresent(user -> users.remove(user));
+        users.remove(email);
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return users.stream().filter(u -> u.getEmail().equals(email)).findFirst();
+        return Optional.ofNullable(users.get(email));
     }
 
     @Override
     public List<User> findAllUsers() {
-        return users.stream().toList();
+        return new ArrayList<>(users.values());
     }
 }

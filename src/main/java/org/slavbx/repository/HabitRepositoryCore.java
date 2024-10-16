@@ -4,38 +4,35 @@ import org.slavbx.model.Habit;
 import org.slavbx.model.User;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class HabitRepositoryCore implements HabitRepository{
-    private final HashSet<Habit> habits;
+    private final Map<String, Habit> habits;
 
     public HabitRepositoryCore() {
-        this.habits = new HashSet<>();
+        this.habits = new HashMap<>();
     }
 
     @Override
-    public void save(Habit habit) {
-        habits.add(habit);
+    public void save(String name, Habit habit) {
+        habits.put(name, habit);
     }
 
     @Override
     public void deleteByName(String name) {
-        Optional<Habit> optHabit = findByName(name);
-        optHabit.ifPresent(habit -> habits.remove(habit));
+        habits.remove(name);
     }
 
     @Override
     public Optional<Habit> findByName(String name) {
-        return habits.stream().filter(h -> h.getName().equals(name)).findFirst();
+        return Optional.ofNullable(habits.get(name));
     }
 
     public List<Habit> findByUser(User user, LocalDate date) {
         if (date == null) {
-            return habits.stream().filter(h -> h.getUser().equals(user)).toList();
+            return habits.values().stream().filter(h -> h.getUser().equals(user)).toList();
         } else {
-            return habits.stream()
+            return habits.values().stream()
                     .filter(h -> h.getUser().equals(user))
                     .filter(h -> h.getCreateDate().getYear() == date.getYear())
                     .filter(h -> h.getCreateDate().getMonth() == date.getMonth())

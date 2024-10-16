@@ -4,19 +4,51 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Класс, представляющий привычку пользователя.
+ * Предоставляет информацию о названии, описании, частоте выполнения,
+ * дате создания и днях, когда привычка была выполнена
+ */
 public class Habit {
+    /**
+     * Название
+     */
     private String name;
+    /**
+     * Описание
+     */
     private String desc;
+    /**
+     * Частота выолнения
+     */
     private Frequency freq;
+    /**
+     * Дата создания
+     */
     private final LocalDate createDate;
+    /**
+     * Пользователь-владелец привычки
+     */
     private User user;
+    /**
+     * Список дат, в которые привычка была выполнена
+     */
     private final List<LocalDate> completionDates;
 
-
+    /**
+     * Перечисление, представляющее частоту выполнения привычек
+     */
     public enum Frequency {
         DAILY, WEEKLY
     }
 
+    /**
+     * Конструктор класса Habit
+     * @param name название привычки
+     * @param desc описание привычки
+     * @param freq частота привычки
+     * @param user объект пользователя-владельца привычки
+     */
     public Habit(String name, String desc, Frequency freq, User user) {
         this.name = name;
         this.desc = desc;
