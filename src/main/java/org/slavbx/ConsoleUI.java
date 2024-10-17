@@ -27,6 +27,7 @@ public class ConsoleUI {
      * Создает тестовых пользователей и привычки
      */
     public void initAndStart() {
+        DatabaseProvider.initDatabase();
         User user = new User("admin", "admin", "admin", User.Level.ADMIN);
         userService.save(user.getEmail(), user);
         user = new User("slav", "slav", "slav", User.Level.USER);

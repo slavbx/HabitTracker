@@ -1,0 +1,128 @@
+databaseChangeLog:
+- changeSet:
+    id: 1729197153104-1
+    author: Administrator (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: email
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: password
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: level
+            type: VARCHAR(255)
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: users_pkey
+            name: id
+            type: INTEGER
+        tableName: users
+- changeSet:
+    id: 1729197153104-2
+    author: Administrator (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: habits_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: desc
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: freq
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: create_date
+            type: VARCHAR(255)
+        - column:
+            name: user_id
+            type: INTEGER
+        tableName: habits
+- changeSet:
+    id: 1729197153104-3
+    author: Administrator (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: habit_completion_dates_pkey
+            name: id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: completion_date
+            type: VARCHAR(255)
+        - column:
+            name: habit_id
+            type: INTEGER
+        tableName: habit_completion_dates
+- changeSet:
+    id: 1729197153104-4
+    author: Administrator (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: habit_id
+        baseTableName: habit_completion_dates
+        constraintName: fk_habit_completion_dates_habit_id
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: CASCADE
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: habits
+        validate: true
+- changeSet:
+    id: 1729197153104-5
+    author: Administrator (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: habits
+        constraintName: fk_habits_user_id
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: CASCADE
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: users
+        validate: true
+
