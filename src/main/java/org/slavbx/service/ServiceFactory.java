@@ -2,6 +2,7 @@ package org.slavbx.service;
 
 import org.slavbx.repository.HabitRepositoryCore;
 import org.slavbx.repository.UserRepositoryCore;
+import org.slavbx.repository.UserRepositoryJdbc;
 
 /**
  * Фабрика для создания сервисов.
@@ -22,6 +23,6 @@ public class ServiceFactory {
      * @return новый экземпляр UserService
      */
     public static UserService getUserService() {
-        return new UserService(new UserRepositoryCore());
+        return new UserService(new UserRepositoryJdbc());
     }
 }

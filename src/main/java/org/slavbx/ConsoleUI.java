@@ -28,10 +28,7 @@ public class ConsoleUI {
      */
     public void initAndStart() {
         DatabaseProvider.initDatabase();
-        User user = new User("admin", "admin", "admin", User.Level.ADMIN);
-        userService.save(user.getEmail(), user);
-        user = new User("slav", "slav", "slav", User.Level.USER);
-        userService.save(user.getEmail(), user);
+        User user = new User("slav", "slav", "slav", User.Level.USER);
         Habit habit = new Habit("name", "desc", Habit.Frequency.DAILY, user);
         habitService.save(habit.getName(), habit);
         habitService.markAsCompleted(habit);
@@ -152,7 +149,7 @@ public class ConsoleUI {
     private void editUserField(User user, Consumer<User> consumer, String field) {
         System.out.print("--Новое " + field + ": ");
         consumer.accept(user);
-        userService.save(user.getEmail(), user);
+        userService.saveById(user.getId(), user);
         System.out.println(field + " отредактировано");
     }
 

@@ -9,9 +9,7 @@ import liquibase.resource.ClassLoaderResourceAccessor;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Properties;
 
 public class DatabaseProvider {
@@ -44,10 +42,21 @@ public class DatabaseProvider {
                     properties.getProperty("liquibase.password")
             );
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-            database.setDefaultSchemaName(properties.getProperty("liquibase.defaultSchema"));
+            database.setDefaultSchemaName(properties.getProperty("liquibase.defaultSchemaName"));
+
+            try (Statement statement = connection.createStatement()) {
+                String sql = "CREATE SCHEMA IF NOT EXISTS " + properties.getProperty("liquibase.defaultSchemaName");
+                statement.execute(sql);
+            } catch (SQLException e) {
+                System.err.println("Error create default schema: " + e.getMessage());
+            }
+
             Liquibase liquibase = new Liquibase(properties.getProperty("liquibase.changeLogFile"),
                     new ClassLoaderResourceAccessor(), database);
             liquibase.update();
+
+//            liquibase.getDatabase().setDefaultSchemaName("habittracker");
+//            liquibase.update();
             connection.close();
         } catch (Exception e) {
             e.printStackTrace();

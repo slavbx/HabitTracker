@@ -5,6 +5,7 @@ package org.slavbx.model;
  * Предоставляет информацию о email, пароле, имени, уровне доступа пользователя
  */
 public class User {
+    Long id;
     /**
      * Электронная почта
      */
@@ -36,6 +37,14 @@ public class User {
      * @param name имя пользователя
      * @param level уровень доступа
      */
+    public User(Long id, String email, String password, String name, Level level) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.level = level;
+    }
+
     public User(String email, String password, String name, Level level) {
         this.email = email;
         this.password = password;
@@ -69,6 +78,16 @@ public class User {
 
     public Level getLevel() {
         return level;
+    }
+
+    public void setLevel(Level level) {}
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override

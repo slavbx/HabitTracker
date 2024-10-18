@@ -15,21 +15,13 @@ public class UserRepositoryCore implements UserRepository {
         this.users = new HashMap<>();
     }
 
-    @Override
+
     public void save(String email, User user) {
         users.put(email, user);
-        String sql = "INSERT INTO habittracker.users (email, password, name, level) VALUES (?, ?, ?, ?);";
-        try (Connection connection = DatabaseProvider.getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, user.getEmail());
-            preparedStatement.setString(2, user.getPassword());
-            preparedStatement.setString(3, user.getName());
-            preparedStatement.setString(4, user.getLevel().name());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println("Ошибка. Не удалось сохранить пользователя"  + e.getMessage());
-        }
+    }
 
+    @Override
+    public void save(User user) {
     }
 
     @Override
@@ -45,5 +37,15 @@ public class UserRepositoryCore implements UserRepository {
     @Override
     public List<User> findAllUsers() {
         return new ArrayList<>(users.values());
+    }
+
+    @Override
+    public Optional<User> findById(Long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public void saveById(Long id, User user) {
+
     }
 }
