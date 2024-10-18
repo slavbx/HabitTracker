@@ -43,9 +43,4 @@ public class UserRepositoryCore implements UserRepository {
     public Optional<User> findById(Long id) {
         return Optional.empty();
     }
-
-    @Override
-    public void saveById(Long id, User user) {
-
-    }
 }

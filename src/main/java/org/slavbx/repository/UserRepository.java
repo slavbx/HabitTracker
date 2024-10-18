@@ -35,6 +35,4 @@ public interface UserRepository {
     List<User> findAllUsers();
 
     Optional<User> findById(Long id);
-
-    void saveById(Long id, User user);
 }

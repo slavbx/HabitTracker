@@ -126,7 +126,10 @@ public class ConsoleUI {
                 "3 - Редактировать пароль: " + user.getPassword() + "\n" +
                 "0 - Назад");
         switch (scanner.next()) {
-            case "1" -> editUserField(user, h -> h.setName(scanner.next()), "имя");
+            case "1" -> {
+                editUserField(user, h -> h.setName(scanner.next()), "имя");
+                editProfile(user);
+            }
             case "2" -> {
                 editUserField(user, h -> h.setEmail(scanner.next()), "email");
                 userService.authorize(user.getEmail(), user.getPassword());
@@ -149,7 +152,7 @@ public class ConsoleUI {
     private void editUserField(User user, Consumer<User> consumer, String field) {
         System.out.print("--Новое " + field + ": ");
         consumer.accept(user);
-        userService.saveById(user.getId(), user);
+        userService.save(user);
         System.out.println(field + " отредактировано");
     }
 

@@ -130,7 +130,10 @@ public class UserService {
         userRepository.save(new User(email, password, name, level));
     }
 
-    public void saveById(Long id, User user) {
-        userRepository.saveById(id, user);
+//    public void saveById(Long id, User user) {
+//        userRepository.saveById(id, user);
+//    }
+    public void save(User user) {
+        userRepository.save(user);
     }
 }
