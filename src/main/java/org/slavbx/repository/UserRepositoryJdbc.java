@@ -13,13 +13,11 @@ public class UserRepositoryJdbc implements UserRepository {
 
     @Override
     public void save(User user) {
-        String sql;
+        String sql = "INSERT INTO users (password, name, level, email) VALUES (?, ?, ?, ?) " +
+                "ON CONFLICT (email) DO UPDATE SET password = excluded.password, " +
+                "name = excluded.name, level = EXCLUDED.level, email = excluded.email;";
+
         try (Connection connection = DatabaseProvider.getConnection()) {
-            if (findByEmail(user.getEmail()).isEmpty()) {
-                sql = "INSERT INTO users (password, name, level, email) VALUES (?, ?, ?, ?);";
-            } else {
-                sql = "UPDATE users SET password = ?, name = ?, level = ? WHERE email = ?";
-            }
             PreparedStatement prepStatement = connection.prepareStatement(sql);
             prepStatement.setString(1, user.getPassword());
             prepStatement.setString(2, user.getName());
@@ -111,6 +109,7 @@ public class UserRepositoryJdbc implements UserRepository {
         return Optional.empty();
     }
 
+    @Override
     public Optional<Long> findIdByEmail(String email) {
         String sql = "SELECT id FROM users WHERE email = ?;";
         try (Connection connection = DatabaseProvider.getConnection()) {

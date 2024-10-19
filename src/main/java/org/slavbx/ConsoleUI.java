@@ -28,10 +28,11 @@ public class ConsoleUI {
      */
     public void initAndStart() {
         DatabaseProvider.initDatabase();
-        User user = new User("slav", "slav", "slav", User.Level.USER);
-        Habit habit = new Habit("name", "desc", Habit.Frequency.DAILY, user);
-        habitService.save(habit.getName(), habit);
-        habitService.markAsCompleted(habit);
+        //User user = new User("slav", "slav", "slav", User.Level.USER);
+        //userService.save(user);
+        //Habit habit = new Habit("name", "desc", Habit.Frequency.DAILY, user);
+        //habitService.save(habit);
+        //habitService.markAsCompleted(habit);
         start();
     }
 
@@ -216,7 +217,7 @@ public class ConsoleUI {
     private void editHabit(String name, LocalDate date) {
         System.out.println("\n--Редактирование привычки " + name);
         if (habitService.isHabitExists(name)) {
-            Habit habit = habitService.findHabitByName(name).get();
+            Habit habit = habitService.findHabitByName(name, userService.getAuthorizedUser()).get();
             System.out.println("Введите команду:\n" +
                     "1 - Редактировать название: " + habit.getName() + "\n" +
                     "2 - Редактировать описание: " + habit.getDesc() + "\n" +
@@ -242,7 +243,7 @@ public class ConsoleUI {
     private void editHabitField(Habit habit, Consumer<Habit> consumer, String field) {
         System.out.print("--Новое " + field + ": ");
         consumer.accept(habit);
-        habitService.save(habit.getName(), habit);
+        habitService.save(habit);
         System.out.println(field + " отредактировано");
     }
 
@@ -275,7 +276,7 @@ public class ConsoleUI {
     private void markCompleteHabit(LocalDate date) {
         System.out.print("--Отметить выполнение привычки\n" + "Введите название: ");
         String name = scanner.next();
-        Optional<Habit> optHabit = habitService.findHabitByName(name);
+        Optional<Habit> optHabit = habitService.findHabitByName(name, userService.getAuthorizedUser());
         if (optHabit.isPresent()) {
             habitService.markAsCompleted(optHabit.get());
             System.out.println("Выполнение отмечено");
@@ -288,7 +289,7 @@ public class ConsoleUI {
     private void statisticMenu(String name, LocalDate date) {
         System.out.println("\n--Статистика по привычке " + name);
         if (habitService.isHabitExists(name)) {
-            Habit habit = habitService.findHabitByName(name).get();
+            Habit habit = habitService.findHabitByName(name, userService.getAuthorizedUser()).get();
             int year = inputInt("Введите год: ");
             int month = inputInt("Введите месяц: ");
             int day = inputInt("Введите день: ");
@@ -346,6 +347,10 @@ public class ConsoleUI {
         System.out.print("--Удаление аккаунта\n" + "Введите email: ");
         String email = scanner.next();
         if (userService.isUserRegistered(email)) {
+            User user = userService.findUserByEmail(email).get();
+            for(Habit habit: habitService.findHabitByUser(user, null)) {
+                habitService.deleteHabitByName(habit.getName());
+            }
             userService.deleteUserByEmail(email);
             System.out.println("Пользователь удалён\n");
         } else {

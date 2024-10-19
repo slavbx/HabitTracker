@@ -21,28 +21,28 @@ class HabitRepositoryCoreTest {
 
     @BeforeEach
     void init() {
-        habitRepository = new HabitRepositoryCore();
+        habitRepository = new HabitRepositoryJdbc();
         user = new User("user@mail.com", "psw", "username", User.Level.USER);
         habit = new Habit("name", "desc", Habit.Frequency.DAILY, user);
-        habitRepository.save(habit.getName(), habit);
+        habitRepository.save(habit);
     }
 
     @Test
     @DisplayName("Проверка удаления привычки по её имени")
     void deleteByName() {
         habitRepository.deleteByName("name");
-        assertThat(habitRepository.findByName("name")).isEqualTo(Optional.empty());
+        assertThat(habitRepository.findByName("name", new User())).isEqualTo(Optional.empty());
     }
 
     @Test
     @DisplayName("Проверка возвращения привычки по её имени")
     void findByName() {
-        assertThat(habitRepository.findByName("name")).isEqualTo(Optional.of(habit));
+        assertThat(habitRepository.findByName("name", new User())).isEqualTo(Optional.of(habit));
     }
 
     @Test
     @DisplayName("Проверка возвращаемого списка привычек по имени пользователя")
     void findByUser() {
-        assertThat(habitRepository.findByUser(user, LocalDate.now())).isEqualTo(List.of(habit));
+        assertThat(habitRepository.findByUser(user)).isEqualTo(List.of(habit));
     }
 }

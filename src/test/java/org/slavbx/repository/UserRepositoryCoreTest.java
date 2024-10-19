@@ -17,9 +17,9 @@ class UserRepositoryCoreTest {
 
     @BeforeEach
     void init() {
-        userRepository = new UserRepositoryCore();
+        userRepository = new UserRepositoryJdbc();
         user = new User("user@mail.com", "psw", "username", User.Level.USER);
-        userRepository.save(user.getEmail(), user);
+        userRepository.save(user);
     }
 
     @Test
@@ -39,7 +39,7 @@ class UserRepositoryCoreTest {
     @DisplayName("Проверка возвращения всех существующих пользователей")
     void findAllUsers() {
         User user1 = new User("user1@mail.com", "psw1", "username1", User.Level.USER);
-        userRepository.save(user1.getEmail(), user1);
+        userRepository.save(user1);
         assertThat(userRepository.findAllUsers()).isEqualTo(List.of(user, user1));
     }
 }

@@ -28,8 +28,8 @@ class UserServiceTest {
     @DisplayName("Проверка вызова метода сохранения пользователя")
     void save() {
         User user = new User("user@mail.com", "psw", "username", User.Level.USER);
-        userService.save(user.getEmail(), user);
-        Mockito.verify(userRepository).save(user.getEmail(), user);
+        userService.save(user);
+        Mockito.verify(userRepository).save(user);
     }
 
     @Test

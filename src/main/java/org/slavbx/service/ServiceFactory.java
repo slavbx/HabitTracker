@@ -1,7 +1,7 @@
 package org.slavbx.service;
 
-import org.slavbx.repository.HabitRepositoryCore;
-import org.slavbx.repository.UserRepositoryCore;
+
+import org.slavbx.repository.HabitRepositoryJdbc;
 import org.slavbx.repository.UserRepositoryJdbc;
 
 /**
@@ -15,7 +15,7 @@ public class ServiceFactory {
      * @return новый экземпляр HabitService
      */
     public static HabitService getHabitService() {
-        return new HabitService(new HabitRepositoryCore());
+        return new HabitService(new HabitRepositoryJdbc());
     }
 
     /**

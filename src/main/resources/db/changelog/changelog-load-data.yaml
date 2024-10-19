@@ -1,0 +1,96 @@
+databaseChangeLog:
+- changeSet:
+      id: 1729329610709-2
+      author: slavbx
+      changes:
+          - loadData:
+                columns:
+                    - column:
+                          header: id
+                          name: id
+                          type: NUMERIC
+                    - column:
+                          header: email
+                          name: email
+                          type: STRING
+                    - column:
+                          header: password
+                          name: password
+                          type: STRING
+                    - column:
+                          header: name
+                          name: name
+                          type: STRING
+                    - column:
+                          header: level
+                          name: level
+                          type: STRING
+                commentLineStartsWith: '#'
+                encoding: UTF-8
+                file: db/changelog/data/users.csv
+                quotchar: '"'
+                separator: ','
+                tableName: users
+                schemaName: habittracker
+- changeSet:
+    id: 1729329610709-1
+    author: slavbx
+    changes:
+    - loadData:
+        columns:
+        - column:
+            header: id
+            name: id
+            type: NUMERIC
+        - column:
+            header: name
+            name: name
+            type: STRING
+        - column:
+            header: description
+            name: description
+            type: STRING
+        - column:
+            header: freq
+            name: freq
+            type: STRING
+        - column:
+            header: create_date
+            name: create_date
+            type: STRING
+        - column:
+            header: user_id
+            name: user_id
+            type: NUMERIC
+        commentLineStartsWith: '#'
+        encoding: UTF-8
+        file: db/changelog/data/habits.csv
+        quotchar: '"'
+        separator: ','
+        tableName: habits
+        schemaName: habittracker
+- changeSet:
+    id: 1729329610709-3
+    author: slavbx
+    changes:
+    - loadData:
+        columns:
+        - column:
+            header: id
+            name: id
+            type: NUMERIC
+        - column:
+            header: completion_date
+            name: completion_date
+            type: STRING
+        - column:
+            header: habit_id
+            name: habit_id
+            type: NUMERIC
+        commentLineStartsWith: '#'
+        encoding: UTF-8
+        file: db/changelog/data/completion_dates.csv
+        quotchar: '"'
+        separator: ','
+        tableName: completion_dates
+        schemaName: habittracker

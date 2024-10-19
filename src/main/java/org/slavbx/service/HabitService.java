@@ -1,5 +1,6 @@
 package org.slavbx.service;
 
+import org.slavbx.model.CompletionDate;
 import org.slavbx.model.Habit;
 import org.slavbx.model.User;
 import org.slavbx.repository.HabitRepository;
@@ -33,8 +34,8 @@ public class HabitService {
      * @param name название привычки для сохранения
      * @param habit объект привычки для сохранения
      */
-    public void save(String name, Habit habit) {
-        habitRepository.save(name, habit);
+    public void save(Habit habit) {
+        habitRepository.save(habit);
     }
 
     /**
@@ -42,8 +43,8 @@ public class HabitService {
      * @param name название привычки для поиска
      * @return объект Optional, содержащий найденную привычку, или пустой объект, если привычка не найдена
      */
-    public Optional<Habit> findHabitByName(String name) {
-        return habitRepository.findByName(name);
+    public Optional<Habit> findHabitByName(String name, User user) {
+        return habitRepository.findByName(name, user);
     }
 
     /**
@@ -61,7 +62,14 @@ public class HabitService {
      * @return список привычек, соответствующих указанному пользователю и дате
      */
     public List<Habit> findHabitByUser(User user, LocalDate date) {
-        return habitRepository.findByUser(user, date);
+        if (date == null) {
+            return habitRepository.findByUser(user);
+        } else {
+            return habitRepository.findByUser(user).stream()
+                    .filter(h -> h.getCreateDate().getYear() == date.getYear())
+                    .filter(h -> h.getCreateDate().getMonth() == date.getMonth())
+                    .filter(h -> h.getCreateDate().getDayOfMonth() == date.getDayOfMonth()).toList();
+        }
     }
 
     /**
@@ -72,14 +80,15 @@ public class HabitService {
      */
     public void markAsCompleted(Habit habit) {
         if (habit.getFreq() == Habit.Frequency.DAILY) {
-            habit.getCompletionDates().add(LocalDate.now());
+            habit.getCompletionDates().add(new CompletionDate(LocalDate.now(), habit));
         } else { //WEEKLY
-            List <LocalDate> dates = new ArrayList<>();
+            List <CompletionDate> dates = new ArrayList<>();
             for (int i = 0; i < 7; i++) { //Заполняем сразу на неделю вперёд
-                dates.add(LocalDate.now().plusDays(i));
+                dates.add(new CompletionDate(LocalDate.now().plusDays(i), habit));
             }
             habit.getCompletionDates().addAll(dates);
         }
+        save(habit);
 
     }
 
@@ -109,7 +118,7 @@ public class HabitService {
      * @return количество дней выполнения привычки за указанный период
      */
     public long getCompletionDaysInPeriod(Habit habit, LocalDate start, LocalDate end) {
-        return habit.getCompletionDates().stream()
+        return habit.getCompletionDates().stream().map(CompletionDate::getDate)
                     .filter(date -> !date.isBefore(start) && !date.isAfter(end))
                     .count();
     }
@@ -121,10 +130,10 @@ public class HabitService {
      */
     public long getStreak(Habit habit) {
         long streak = 0;
-        List<LocalDate> dates = habit.getCompletionDates();
+        List<CompletionDate> dates = habit.getCompletionDates();
 
         for (int i = 0; i < dates.size(); i++) {
-            LocalDate date = dates.get(dates.size() - 1 - i);
+            LocalDate date = dates.get(dates.size() - 1 - i).getDate();
             if (date.isEqual(LocalDate.now().minusDays(i))) {
                 streak++;
             } else {
@@ -178,7 +187,7 @@ public class HabitService {
      * @param user  пользователь, которому принадлежит привычка
      */
     public void createHabit(String name, String desc, Habit.Frequency freq, User user) {
-        save(name, new Habit(name, desc, freq, user));
+        save(new Habit(name, desc, freq, user));
     }
 
     /**
@@ -187,6 +196,6 @@ public class HabitService {
      * @return true, если привычка существует, иначе false
      */
     public boolean isHabitExists(String name) {
-        return findHabitByName(name).isPresent();
+        return findHabitByName(name, new User()).isPresent();
     }
 }

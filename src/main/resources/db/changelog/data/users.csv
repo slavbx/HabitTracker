@@ -1,3 +1,5 @@
-"email","password","name","level"
-"admin","admin","admin","ADMIN"
-"slav","slav","slav","USER"
+"id","email","password","name","level"
+"1","admin","admin","admin","ADMIN"
+"2","slav","slav","slav","USER"
+"3","user","user","user","USER"
+
