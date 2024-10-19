@@ -6,23 +6,32 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slavbx.model.Habit;
 import org.slavbx.model.User;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Testcontainers
 @DisplayName("Тестирование HabitRepository")
 class HabitRepositoryCoreTest {
     Habit habit;
     User user;
     HabitRepository habitRepository;
 
+    @Container
+    public static PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:latest")
+            .withDatabaseName("db_test")
+            .withUsername("slav")
+            .withPassword("slav");
+
     @BeforeEach
     void init() {
-        habitRepository = new HabitRepositoryJdbc();
-        user = new User("user@mail.com", "psw", "username", User.Level.USER);
+        habitRepository = new HabitRepositoryJdbc(postgresContainer.getJdbcUrl(), "slav", "slav");
+        user = new User(1L,"user@mail.com", "psw", "username", User.Level.USER);
         habit = new Habit("name", "desc", Habit.Frequency.DAILY, user);
         habitRepository.save(habit);
     }
@@ -31,13 +40,13 @@ class HabitRepositoryCoreTest {
     @DisplayName("Проверка удаления привычки по её имени")
     void deleteByName() {
         habitRepository.deleteByName("name");
-        assertThat(habitRepository.findByName("name", new User())).isEqualTo(Optional.empty());
+        assertThat(habitRepository.findByName("name", user)).isEqualTo(Optional.empty());
     }
 
     @Test
     @DisplayName("Проверка возвращения привычки по её имени")
     void findByName() {
-        assertThat(habitRepository.findByName("name", new User())).isEqualTo(Optional.of(habit));
+        assertThat(habitRepository.findByName("name", user)).isEqualTo(Optional.of(habit));
     }
 
     @Test

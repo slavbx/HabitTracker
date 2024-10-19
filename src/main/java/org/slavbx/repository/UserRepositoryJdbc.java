@@ -11,6 +11,9 @@ public class UserRepositoryJdbc implements UserRepository {
     public UserRepositoryJdbc() {
     }
 
+    public UserRepositoryJdbc(String jdbcUrl, String user, String password) {
+    }
+
     @Override
     public void save(User user) {
         String sql = "INSERT INTO users (password, name, level, email) VALUES (?, ?, ?, ?) " +

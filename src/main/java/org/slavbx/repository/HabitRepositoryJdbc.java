@@ -17,6 +17,9 @@ public class HabitRepositoryJdbc implements HabitRepository{
     public HabitRepositoryJdbc() {
     }
 
+    public HabitRepositoryJdbc(String jdbcUrl, String user, String password) {
+    }
+
     @Override
     public void saveCompData(Habit habit) {
         for (CompletionDate compDate: habit.getCompletionDates()) {

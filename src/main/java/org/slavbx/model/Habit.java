@@ -36,7 +36,6 @@ public class Habit {
      * Список дат, в которые привычка была выполнена
      */
     private List<CompletionDate> completionDates;
-
     /**
      * Перечисление, представляющее частоту выполнения привычек
      */
@@ -52,6 +51,16 @@ public class Habit {
      * @param user объект пользователя-владельца привычки
      */
     public Habit(String name, String desc, Frequency freq, User user) {
+        this.name = name;
+        this.desc = desc;
+        this.freq = freq;
+        this.user = user;
+        this.createDate = LocalDate.now();
+        this.completionDates = new ArrayList<>();
+    }
+
+    public Habit(Long id, String name, String desc, Frequency freq, User user) {
+        this.id = id;
         this.name = name;
         this.desc = desc;
         this.freq = freq;
