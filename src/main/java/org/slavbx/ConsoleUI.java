@@ -27,13 +27,12 @@ public class ConsoleUI {
      * Создает тестовых пользователей и привычки
      */
     public void initAndStart() {
-        User user = new User("admin", "admin", "admin", User.Level.ADMIN);
-        userService.save(user.getEmail(), user);
-        user = new User("slav", "slav", "slav", User.Level.USER);
-        userService.save(user.getEmail(), user);
-        Habit habit = new Habit("name", "desc", Habit.Frequency.DAILY, user);
-        habitService.save(habit.getName(), habit);
-        habitService.markAsCompleted(habit);
+        DatabaseProvider.initDatabase();
+        //User user = new User("slav", "slav", "slav", User.Level.USER);
+        //userService.save(user);
+        //Habit habit = new Habit("name", "desc", Habit.Frequency.DAILY, user);
+        //habitService.save(habit);
+        //habitService.markAsCompleted(habit);
         start();
     }
 
@@ -128,7 +127,10 @@ public class ConsoleUI {
                 "3 - Редактировать пароль: " + user.getPassword() + "\n" +
                 "0 - Назад");
         switch (scanner.next()) {
-            case "1" -> editUserField(user, h -> h.setName(scanner.next()), "имя");
+            case "1" -> {
+                editUserField(user, h -> h.setName(scanner.next()), "имя");
+                editProfile(user);
+            }
             case "2" -> {
                 editUserField(user, h -> h.setEmail(scanner.next()), "email");
                 userService.authorize(user.getEmail(), user.getPassword());
@@ -151,7 +153,7 @@ public class ConsoleUI {
     private void editUserField(User user, Consumer<User> consumer, String field) {
         System.out.print("--Новое " + field + ": ");
         consumer.accept(user);
-        userService.save(user.getEmail(), user);
+        userService.save(user);
         System.out.println(field + " отредактировано");
     }
 
@@ -215,7 +217,7 @@ public class ConsoleUI {
     private void editHabit(String name, LocalDate date) {
         System.out.println("\n--Редактирование привычки " + name);
         if (habitService.isHabitExists(name)) {
-            Habit habit = habitService.findHabitByName(name).get();
+            Habit habit = habitService.findHabitByName(name, userService.getAuthorizedUser()).get();
             System.out.println("Введите команду:\n" +
                     "1 - Редактировать название: " + habit.getName() + "\n" +
                     "2 - Редактировать описание: " + habit.getDesc() + "\n" +
@@ -241,7 +243,7 @@ public class ConsoleUI {
     private void editHabitField(Habit habit, Consumer<Habit> consumer, String field) {
         System.out.print("--Новое " + field + ": ");
         consumer.accept(habit);
-        habitService.save(habit.getName(), habit);
+        habitService.save(habit);
         System.out.println(field + " отредактировано");
     }
 
@@ -274,7 +276,7 @@ public class ConsoleUI {
     private void markCompleteHabit(LocalDate date) {
         System.out.print("--Отметить выполнение привычки\n" + "Введите название: ");
         String name = scanner.next();
-        Optional<Habit> optHabit = habitService.findHabitByName(name);
+        Optional<Habit> optHabit = habitService.findHabitByName(name, userService.getAuthorizedUser());
         if (optHabit.isPresent()) {
             habitService.markAsCompleted(optHabit.get());
             System.out.println("Выполнение отмечено");
@@ -287,7 +289,7 @@ public class ConsoleUI {
     private void statisticMenu(String name, LocalDate date) {
         System.out.println("\n--Статистика по привычке " + name);
         if (habitService.isHabitExists(name)) {
-            Habit habit = habitService.findHabitByName(name).get();
+            Habit habit = habitService.findHabitByName(name, userService.getAuthorizedUser()).get();
             int year = inputInt("Введите год: ");
             int month = inputInt("Введите месяц: ");
             int day = inputInt("Введите день: ");
@@ -345,6 +347,10 @@ public class ConsoleUI {
         System.out.print("--Удаление аккаунта\n" + "Введите email: ");
         String email = scanner.next();
         if (userService.isUserRegistered(email)) {
+            User user = userService.findUserByEmail(email).get();
+            for(Habit habit: habitService.findHabitByUser(user, null)) {
+                habitService.deleteHabitByName(habit.getName());
+            }
             userService.deleteUserByEmail(email);
             System.out.println("Пользователь удалён\n");
         } else {

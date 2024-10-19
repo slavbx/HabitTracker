@@ -1,0 +1,166 @@
+databaseChangeLog:
+- changeSet:
+    id: 1729329304659-1
+    author: slavbx
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: habits_pkey
+            name: id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: description
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: freq
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: create_date
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: user_id
+            type: BIGINT
+        tableName: habits
+        schemaName: habittracker
+- changeSet:
+    id: 1729329304659-2
+    author: slavbx
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: users_pkey
+            name: id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: email
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: password
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: level
+            type: VARCHAR(255)
+        tableName: users
+        schemaName: habittracker
+- changeSet:
+    id: 1729329304659-3
+    author: slavbx
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: completion_dates_pkey
+            name: id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: completion_date
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: habit_id
+            type: BIGINT
+        tableName: completion_dates
+        schemaName: habittracker
+- changeSet:
+    id: 1729329304659-4
+    author: slavbx
+    changes:
+    - addUniqueConstraint:
+        columnNames: name
+        constraintName: name
+        tableName: habits
+        schemaName: habittracker
+- changeSet:
+    id: 1729329304659-5
+    author: slavbx
+    changes:
+    - addUniqueConstraint:
+        columnNames: email
+        constraintName: unique_email
+        tableName: users
+        schemaName: habittracker
+- changeSet:
+    id: 1729329304659-6
+    author: slavbx
+    changes:
+    - addUniqueConstraint:
+        columnNames: completion_date, habit_id
+        constraintName: unque_completion_dates
+        tableName: completion_dates
+        schemaName: habittracker
+- changeSet:
+    id: 1729329304659-7
+    author: slavbx
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: habit_id
+        baseTableName: completion_dates
+        baseTableSchemaName: habittracker
+        constraintName: fk_completion_dates_habit_id
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: habits
+        referencedTableSchemaName: habittracker
+        validate: true
+- changeSet:
+    id: 1729329304659-8
+    author: slavbx
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: habits
+        baseTableSchemaName: habittracker
+        constraintName: fk_habits_user_id
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: users
+        referencedTableSchemaName: habittracker
+        validate: true
+

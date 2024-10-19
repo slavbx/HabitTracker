@@ -1,0 +1,16 @@
+#version: '3.8'
+
+services:
+  postgres_habittracker:
+    container_name: postgres_habittracker
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: db_habittracker
+      POSTGRES_USER: slav
+      POSTGRES_PASSWORD: slav
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data:

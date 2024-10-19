@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3345345
+      author: slavbx
+      changes:
+        - sql:
+            sql: |
+              SELECT setval('habittracker.users_id_seq', COALESCE(MAX(id), 3)) FROM habittracker.users;
+              SELECT setval('habittracker.habits_id_seq', COALESCE(MAX(id), 6)) FROM habittracker.habits;
+              SELECT setval('habittracker.completion_dates_id_seq', COALESCE(MAX(id), 18)) FROM habittracker.completion_dates;

@@ -1,0 +1,7 @@
+"id","name","description","freq","create_date","user_id"
+"1","habit1","sport","DAILY","2024-10-15","2"
+"2","habit2","sport","DAILY","2024-10-16","2"
+"3","habit3","food","WEEKLY","2024-10-17","2"
+"4","habit4","food","DAILY","2024-10-18","3"
+"5","habit5","study","WEEKLY","2024-10-19","3"
+"6","habit6","study","WEEKLY","2024-10-20","3"

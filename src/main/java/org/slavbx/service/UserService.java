@@ -31,15 +31,6 @@ public class UserService {
     }
 
     /**
-     * Сохраняет пользователя с указанным email
-     * @param email электронная почта для сохранения
-     * @param user объект пользователя для сохранения
-     */
-    public void save(String email, User user) {
-        userRepository.save(email, user);
-    }
-
-    /**
      * Удаляет пользователя по указанному email
      * @param email электронная почта для удаления пользователя
      */
@@ -57,7 +48,7 @@ public class UserService {
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             user.setPassword("psw");
-            userRepository.save(email, user);
+            userRepository.save(user);
         }
     }
 
@@ -136,6 +127,13 @@ public class UserService {
      * @param level    уровень нового пользователя
      */
     public void registerUser(String email, String password, String name, User.Level level) {
-        save(email, new User(email, password, name, level));
+        userRepository.save(new User(email, password, name, level));
+    }
+
+//    public void saveById(Long id, User user) {
+//        userRepository.saveById(id, user);
+//    }
+    public void save(User user) {
+        userRepository.save(user);
     }
 }
