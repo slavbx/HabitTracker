@@ -16,6 +16,8 @@ import java.util.Optional;
  * удаления и получения статистики по привычкам пользователя
  */
 public class HabitService {
+    private static final int DAYS_IN_WEEK = 7;
+    private static final int MAX_PERCENTAGE = 100;
     /**
      * Репозиторий привычек
      */
@@ -65,10 +67,7 @@ public class HabitService {
         if (date == null) {
             return habitRepository.findByUser(user);
         } else {
-            return habitRepository.findByUser(user).stream()
-                    .filter(h -> h.getCreateDate().getYear() == date.getYear())
-                    .filter(h -> h.getCreateDate().getMonth() == date.getMonth())
-                    .filter(h -> h.getCreateDate().getDayOfMonth() == date.getDayOfMonth()).toList();
+            return habitRepository.findByUser(user).stream().filter(h -> h.getCreateDate().isEqual(date)).toList();
         }
     }
 
@@ -80,11 +79,17 @@ public class HabitService {
      */
     public void markAsCompleted(Habit habit) {
         if (habit.getFreq() == Habit.Frequency.DAILY) {
-            habit.getCompletionDates().add(new CompletionDate(LocalDate.now(), habit));
+            habit.getCompletionDates().add(CompletionDate.builder()
+                            .date(LocalDate.now())
+                            .habit(habit)
+                            .build());
         } else { //WEEKLY
             List <CompletionDate> dates = new ArrayList<>();
-            for (int i = 0; i < 7; i++) { //Заполняем сразу на неделю вперёд
-                dates.add(new CompletionDate(LocalDate.now().plusDays(i), habit));
+            for (int i = 0; i < DAYS_IN_WEEK; i++) { //Заполняем сразу на неделю вперёд
+                dates.add(CompletionDate.builder()
+                                .date(LocalDate.now().plusDays(i))
+                                .habit(habit)
+                                .build());
             }
             habit.getCompletionDates().addAll(dates);
         }
@@ -104,8 +109,8 @@ public class HabitService {
             return getCompletionDaysInPeriod(habit, start, end);
         } else { //WEEKLY
             long completionsDays = getCompletionDaysInPeriod(habit, start, end);
-            long completions = completionsDays / 7;
-            if (completionsDays % 7 > 0) completions++; //Часть отмеченной недели, вошедшая в период
+            long completions = completionsDays / DAYS_IN_WEEK;
+            if (completionsDays % DAYS_IN_WEEK > 0) completions++; //Часть отмеченной недели, вошедшая в период
             return completions;
         }
     }
@@ -141,7 +146,7 @@ public class HabitService {
             }
         }
         if (habit.getFreq() == Habit.Frequency.WEEKLY) {
-            streak = streak / 7;
+            streak = streak / DAYS_IN_WEEK;
         }
         return streak;
     }
@@ -158,7 +163,7 @@ public class HabitService {
         if (totalDays <= 0) {
             return 0;
         }
-        return (double) getCompletionDaysInPeriod(habit, start, end) / totalDays * 100;
+        return (double) getCompletionDaysInPeriod(habit, start, end) / totalDays * MAX_PERCENTAGE;
     }
 
     /**
@@ -187,7 +192,7 @@ public class HabitService {
      * @param user  пользователь, которому принадлежит привычка
      */
     public void createHabit(String name, String desc, Habit.Frequency freq, User user) {
-        save(new Habit(name, desc, freq, user));
+        save(Habit.builder().name(name).desc(desc).freq(freq).user(user).build());
     }
 
     /**
@@ -196,6 +201,6 @@ public class HabitService {
      * @return true, если привычка существует, иначе false
      */
     public boolean isHabitExists(String name) {
-        return findHabitByName(name, new User()).isPresent();
+        return findHabitByName(name, User.builder().build()).isPresent();
     }
 }

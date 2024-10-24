@@ -23,11 +23,8 @@ public class HabitRepositoryJdbc implements HabitRepository{
     @Override
     public void saveCompData(Habit habit) {
         for (CompletionDate compDate: habit.getCompletionDates()) {
-            String sql = "INSERT INTO completion_dates (completion_date, habit_id) VALUES (?, ?) " +
-                    "ON CONFLICT (completion_date, habit_id) DO UPDATE SET " +
-                    "completion_date = excluded.completion_date;";
             try (Connection connection = DatabaseProvider.getConnection()) {
-                PreparedStatement prepStatement = connection.prepareStatement(sql);
+                PreparedStatement prepStatement = connection.prepareStatement(SqlQueries.INSERT_COMPLETION_DATE);
                 //prepStatement.setLong(1, compDate.getId());
                 prepStatement.setString(1, compDate.getDate().toString());
                 prepStatement.setLong(2, compDate.getHabit().getId());
@@ -41,11 +38,8 @@ public class HabitRepositoryJdbc implements HabitRepository{
     @Override
     public void save(Habit habit) {
         saveCompData(habit);
-        String sql = "INSERT INTO habits (name, description, freq, create_date, user_id) VALUES (?, ?, ?, ?, ?) " +
-                "ON CONFLICT (name) DO UPDATE SET "+
-                "description = excluded.description, freq = excluded.freq, create_date = excluded.create_date, user_id = excluded.user_id;";
         try (Connection connection = DatabaseProvider.getConnection()) {
-            PreparedStatement prepStatement = connection.prepareStatement(sql);
+            PreparedStatement prepStatement = connection.prepareStatement(SqlQueries.INSERT_HABIT);
             //prepStatement.setLong(1, habit.getId());
             prepStatement.setString(1, habit.getName());
             prepStatement.setString(2, habit.getDesc());
@@ -62,10 +56,8 @@ public class HabitRepositoryJdbc implements HabitRepository{
     public void deleteByName(String name) {
         Optional<Long> optId = findIdByName(name);
         optId.ifPresent(this::deleteCompletionsByHabitId);
-
-        String sql = "DELETE FROM habits WHERE name = ?;";
         try (Connection connection = DatabaseProvider.getConnection();
-             PreparedStatement prepStatement = connection.prepareStatement(sql)) {
+             PreparedStatement prepStatement = connection.prepareStatement(SqlQueries.DELETE_HABIT_BY_ID)) {
             prepStatement.setString(1, name);
             prepStatement.executeUpdate();
         } catch (SQLException e) {
@@ -75,9 +67,8 @@ public class HabitRepositoryJdbc implements HabitRepository{
 
     @Override
     public void deleteCompletionsByHabitId(Long id) {
-        String sql = "DELETE FROM completion_dates WHERE habit_id = ?;";
         try (Connection connection = DatabaseProvider.getConnection();
-            PreparedStatement prepStatement = connection.prepareStatement(sql)) {
+            PreparedStatement prepStatement = connection.prepareStatement(SqlQueries.DELETE_COMPLETIONS_BY_HABIT_ID)) {
             prepStatement.setLong(1, id);
             prepStatement.executeUpdate();
         } catch (SQLException e) {
@@ -89,21 +80,12 @@ public class HabitRepositoryJdbc implements HabitRepository{
     public Optional<Habit> findByName(String name, User user) {
         Optional<Long> optId = findIdByName(name);
         if (optId.isPresent()) {
-            String sql = "SELECT * FROM habits WHERE id = ?;";
             try (Connection connection = DatabaseProvider.getConnection()) {
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                PreparedStatement preparedStatement = connection.prepareStatement(SqlQueries.SELECT_HABIT_BY_ID);
                 preparedStatement.setLong(1, optId.get());
                 ResultSet resultSet = preparedStatement.executeQuery();
                 if (resultSet.next()) {
-                    Habit habit = new Habit(
-                            resultSet.getLong("id"),
-                            resultSet.getString("name"),
-                            resultSet.getString("description"),
-                            Habit.Frequency.valueOf(resultSet.getString("freq")),
-                            LocalDate.parse(resultSet.getString("create_date")),
-                            user,
-                            new ArrayList<>());
-                    habit.setCompletionDates(findCompDatesByHabit(habit));
+                    Habit habit = mapResultSetToHabit(resultSet, user);
                     return Optional.of(habit);
                 }
 
@@ -116,9 +98,8 @@ public class HabitRepositoryJdbc implements HabitRepository{
 
     @Override
     public Optional<Long> findIdByName(String name) {
-        String sql = "SELECT id FROM habits WHERE name = ?;";
         try (Connection connection = DatabaseProvider.getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            PreparedStatement preparedStatement = connection.prepareStatement(SqlQueries.SELECT_HABIT_ID_BY_NAME);
             preparedStatement.setString(1, name);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -133,19 +114,12 @@ public class HabitRepositoryJdbc implements HabitRepository{
     @Override
     public List<Habit> findByUser(User user) {
         List<Habit> habits = new ArrayList<>();
-        String sql = "SELECT id, name, description, freq, create_date FROM habits WHERE user_id = ?;";
         try (Connection connection = DatabaseProvider.getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            PreparedStatement preparedStatement = connection.prepareStatement(SqlQueries.SELECT_HABIT_BY_USER_ID);
             preparedStatement.setLong(1, user.getId());
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                Habit habit = new Habit(resultSet.getLong("id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        Habit.Frequency.valueOf(resultSet.getString("freq")),
-                        LocalDate.parse(resultSet.getString("create_date")), //Возможно дата не спарсится корректно
-                        user,
-                        new ArrayList<>()); //Добавить completion_Dates
+                Habit habit = mapResultSetToHabit(resultSet, user);
                 habit.setCompletionDates(findCompDatesByHabit(habit));
                 habits.add(habit);
             }
@@ -158,21 +132,33 @@ public class HabitRepositoryJdbc implements HabitRepository{
     @Override
     public List<CompletionDate> findCompDatesByHabit(Habit habit) {
         List<CompletionDate> compDates = new ArrayList<>();
-        String sql = "SELECT id, completion_date, habit_id FROM completion_dates WHERE habit_id = ?;";
         try (Connection connection = DatabaseProvider.getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            PreparedStatement preparedStatement = connection.prepareStatement(SqlQueries.SELECT_COMPLETIONS_BY_HABIT_ID);
             preparedStatement.setLong(1, habit.getId());
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                CompletionDate compDate = new CompletionDate(
-                        resultSet.getLong("id"),
-                        LocalDate.parse(resultSet.getString("completion_date")),
-                        habit);
+                CompletionDate compDate = CompletionDate.builder()
+                        .id(resultSet.getLong("id"))
+                        .date(LocalDate.parse(resultSet.getString("completion_date")))
+                        .habit(habit)
+                        .build();
                 compDates.add(compDate);
             }
         } catch (SQLException e) {
             System.out.println("Ошибка. Не удалось вернуть список отмеченных дат"  + e.getMessage());
         }
         return compDates;
+    }
+
+    private Habit mapResultSetToHabit(ResultSet resultSet, User user) throws SQLException {
+        return Habit.builder()
+                .id(resultSet.getLong("id"))
+                .name(resultSet.getString("name"))
+                .desc(resultSet.getString("description"))
+                .freq(Habit.Frequency.valueOf(resultSet.getString("freq")))
+                .createDate(LocalDate.parse(resultSet.getString("create_date")))
+                .user(user)
+                .completionDates(new ArrayList<>())
+                .build();
     }
 }

@@ -13,6 +13,8 @@ import java.sql.*;
 import java.util.Properties;
 
 public class DatabaseProvider {
+    private static final String CREATE_SCHEMA =
+            "CREATE SCHEMA IF NOT EXISTS %s";
 
     public static Connection getConnection() throws SQLException {
         Connection connection;
@@ -45,7 +47,7 @@ public class DatabaseProvider {
             database.setDefaultSchemaName(properties.getProperty("liquibase.defaultSchemaName"));
 
             try (Statement statement = connection.createStatement()) {
-                String sql = "CREATE SCHEMA IF NOT EXISTS " + properties.getProperty("liquibase.defaultSchemaName");
+                String sql = String.format(CREATE_SCHEMA, properties.getProperty("liquibase.defaultSchemaName"));
                 statement.execute(sql);
             } catch (SQLException e) {
                 System.err.println("Error create default schema: " + e.getMessage());

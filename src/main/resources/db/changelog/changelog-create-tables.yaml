@@ -13,32 +13,39 @@ databaseChangeLog:
               primaryKeyName: habits_pkey
             name: id
             type: BIGINT
+            remarks: Идентификатор привычки
         - column:
             constraints:
               nullable: false
             name: name
             type: VARCHAR(255)
+            remarks: Название привычки
         - column:
             constraints:
               nullable: false
             name: description
             type: VARCHAR(255)
+            remarks: Описание привычки
         - column:
             constraints:
               nullable: false
             name: freq
             type: VARCHAR(255)
+            remarks: Частота привычки
         - column:
             constraints:
               nullable: false
             name: create_date
             type: VARCHAR(255)
+            remarks: Дата создания привычки
         - column:
             constraints:
               nullable: false
             name: user_id
             type: BIGINT
+            remarks: Идентификатор пользователя
         tableName: habits
+        remarks: Таблица хранения привычки
         schemaName: habittracker
 - changeSet:
     id: 1729329304659-2
@@ -54,27 +61,33 @@ databaseChangeLog:
               primaryKeyName: users_pkey
             name: id
             type: BIGINT
+            remarks: Идентификатор пользователя
         - column:
             constraints:
               nullable: false
             name: email
             type: VARCHAR(255)
+            remarks: Email пользователя
         - column:
             constraints:
               nullable: false
             name: password
             type: VARCHAR(255)
+            remarks: Пароль пользователя
         - column:
             constraints:
               nullable: false
             name: name
             type: VARCHAR(255)
+            remarks: Имя пользователя
         - column:
             constraints:
               nullable: false
             name: level
             type: VARCHAR(255)
+            remarks: Роль пользователя
         tableName: users
+        remarks: Таблица для хранения пользователей
         schemaName: habittracker
 - changeSet:
     id: 1729329304659-3
@@ -90,6 +103,7 @@ databaseChangeLog:
               primaryKeyName: completion_dates_pkey
             name: id
             type: BIGINT
+            remarks: Идентификатор даты выполнения привычки
         - column:
             constraints:
               nullable: false
@@ -100,7 +114,9 @@ databaseChangeLog:
               nullable: false
             name: habit_id
             type: BIGINT
+            remarks: Идентификатор привычки
         tableName: completion_dates
+        remarks: Таблица для хранения дат выполнения привычек
         schemaName: habittracker
 - changeSet:
     id: 1729329304659-4

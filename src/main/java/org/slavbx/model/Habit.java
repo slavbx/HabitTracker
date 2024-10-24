@@ -1,5 +1,9 @@
 package org.slavbx.model;
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +13,9 @@ import java.util.List;
  * Предоставляет информацию о названии, описании, частоте выполнения,
  * дате создания и днях, когда привычка была выполнена
  */
+@Getter
+@Setter
+@Builder
 public class Habit {
 
     Long id;
@@ -41,94 +48,6 @@ public class Habit {
      */
     public enum Frequency {
         DAILY, WEEKLY
-    }
-
-    /**
-     * Конструктор класса Habit
-     * @param name название привычки
-     * @param desc описание привычки
-     * @param freq частота привычки
-     * @param user объект пользователя-владельца привычки
-     */
-    public Habit(String name, String desc, Frequency freq, User user) {
-        this.name = name;
-        this.desc = desc;
-        this.freq = freq;
-        this.user = user;
-        this.createDate = LocalDate.now();
-        this.completionDates = new ArrayList<>();
-    }
-
-    public Habit(Long id, String name, String desc, Frequency freq, User user) {
-        this.id = id;
-        this.name = name;
-        this.desc = desc;
-        this.freq = freq;
-        this.user = user;
-        this.createDate = LocalDate.now();
-        this.completionDates = new ArrayList<>();
-    }
-
-    public Habit(Long id, String name, String desc, Frequency freq, LocalDate createDate, User user, List<CompletionDate> completionDates) {
-        this.id = id;
-        this.name = name;
-        this.desc = desc;
-        this.freq = freq;
-        this.user = user;
-        this.createDate = createDate;
-        this.completionDates = completionDates;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
-    }
-
-    public Frequency getFreq() {
-        return freq;
-    }
-
-    public void setFreq(Frequency freq) {
-        this.freq = freq;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public LocalDate getCreateDate() {
-        return createDate;
-    }
-
-    public List<CompletionDate> getCompletionDates() {
-        return completionDates;
-    }
-
-    public void setCompletionDates(List<CompletionDate> completionDates) {
-        this.completionDates = completionDates;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     @Override

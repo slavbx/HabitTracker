@@ -16,12 +16,8 @@ public class UserRepositoryJdbc implements UserRepository {
 
     @Override
     public void save(User user) {
-        String sql = "INSERT INTO users (password, name, level, email) VALUES (?, ?, ?, ?) " +
-                "ON CONFLICT (email) DO UPDATE SET password = excluded.password, " +
-                "name = excluded.name, level = EXCLUDED.level, email = excluded.email;";
-
         try (Connection connection = DatabaseProvider.getConnection()) {
-            PreparedStatement prepStatement = connection.prepareStatement(sql);
+            PreparedStatement prepStatement = connection.prepareStatement(SqlQueries.INSERT_USER);
             prepStatement.setString(1, user.getPassword());
             prepStatement.setString(2, user.getName());
             prepStatement.setString(3, user.getLevel().name());
@@ -36,9 +32,8 @@ public class UserRepositoryJdbc implements UserRepository {
     public void deleteByEmail(String email) {
         Optional<Long> id = findIdByEmail(email);
         if (id.isPresent()) {
-            String sql = "DELETE FROM users WHERE id = ?;";
             try (Connection connection = DatabaseProvider.getConnection()) {
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                PreparedStatement preparedStatement = connection.prepareStatement(SqlQueries.DELETE_USER_BY_ID);
                 preparedStatement.setLong(1, id.get());
                 preparedStatement.executeUpdate();
             } catch (SQLException e) {
@@ -51,18 +46,12 @@ public class UserRepositoryJdbc implements UserRepository {
     public Optional<User> findByEmail(String email) {
         Optional<Long> id = findIdByEmail(email);
         if (id.isPresent()) {
-            String sql = "SELECT * FROM users WHERE id = ?;";
             try (Connection connection = DatabaseProvider.getConnection()) {
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                PreparedStatement preparedStatement = connection.prepareStatement(SqlQueries.SELECT_USER_BY_ID);
                 preparedStatement.setLong(1, id.get());
                 ResultSet resultSet = preparedStatement.executeQuery();
                 if (resultSet.next()) {
-                    return Optional.of(new User(
-                            resultSet.getLong("id"),
-                            resultSet.getString("email"),
-                            resultSet.getString("password"),
-                            resultSet.getString("name"),
-                            User.Level.valueOf(resultSet.getString("level"))));
+                    return Optional.of(mapResultSetToUser(resultSet));
                 }
             } catch (SQLException e) {
                 System.out.println("Ошибка. Не удалось вернуть пользователя"  + e.getMessage());
@@ -74,17 +63,11 @@ public class UserRepositoryJdbc implements UserRepository {
     @Override
     public List<User> findAllUsers() {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT * FROM users;";
         try (Connection connection = DatabaseProvider.getConnection()) {
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
+            ResultSet resultSet = statement.executeQuery(SqlQueries.SELECT_USERS);
             while (resultSet.next()) {
-                User user = new User(resultSet.getLong("id"),
-                        resultSet.getString("email"),
-                        resultSet.getString("password"),
-                        resultSet.getString("name"),
-                        User.Level.valueOf(resultSet.getString("level")));
-                users.add(user);
+                users.add(mapResultSetToUser(resultSet));
             }
         } catch (SQLException e) {
             System.out.println("Ошибка. Не удалось найти пользователей"  + e.getMessage());
@@ -94,17 +77,12 @@ public class UserRepositoryJdbc implements UserRepository {
 
     @Override
     public Optional<User> findById(Long id) {
-        String sql = "SELECT * FROM users WHERE id = ?;";
         try (Connection connection = DatabaseProvider.getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            PreparedStatement preparedStatement = connection.prepareStatement(SqlQueries.SELECT_USER_BY_ID);
             preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                return Optional.of(new User(resultSet.getLong("id"),
-                        resultSet.getString("email"),
-                        resultSet.getString("password"),
-                        resultSet.getString("name"),
-                        User.Level.valueOf(resultSet.getString("level"))));
+                return Optional.of(mapResultSetToUser(resultSet));
             }
         } catch (SQLException e) {
             System.out.println("Ошибка. Не удалось вернуть пользователя"  + e.getMessage());
@@ -114,9 +92,8 @@ public class UserRepositoryJdbc implements UserRepository {
 
     @Override
     public Optional<Long> findIdByEmail(String email) {
-        String sql = "SELECT id FROM users WHERE email = ?;";
         try (Connection connection = DatabaseProvider.getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            PreparedStatement preparedStatement = connection.prepareStatement(SqlQueries.SELECT_USER_BY_EMAIL);
             preparedStatement.setString(1, email);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -126,5 +103,15 @@ public class UserRepositoryJdbc implements UserRepository {
             System.out.println("Ошибка. Не удалось вернуть id пользователя"  + e.getMessage());
         }
         return Optional.empty();
+    }
+
+    private User mapResultSetToUser(ResultSet resultSet) throws SQLException {
+        return User.builder()
+                .id(resultSet.getLong("id"))
+                .email(resultSet.getString("email"))
+                .password(resultSet.getString("password"))
+                .name(resultSet.getString("name"))
+                .level(User.Level.valueOf(resultSet.getString("level")))
+                .build();
     }
 }

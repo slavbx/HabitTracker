@@ -28,11 +28,6 @@ public class ConsoleUI {
      */
     public void initAndStart() {
         DatabaseProvider.initDatabase();
-        //User user = new User("slav", "slav", "slav", User.Level.USER);
-        //userService.save(user);
-        //Habit habit = new Habit("name", "desc", Habit.Frequency.DAILY, user);
-        //habitService.save(habit);
-        //habitService.markAsCompleted(habit);
         start();
     }
 
