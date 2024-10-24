@@ -11,10 +11,9 @@ import java.util.Optional;
 public interface UserRepository {
     /**
      * Сохраняет пользователя с указанным email
-     * @param email электронная почта для сохранения
      * @param user объект пользователя для сохранения
      */
-    void save(String email, User user);
+    void save(User user);
 
     /**
      * Удаляет пользователя по указанному email
@@ -34,4 +33,8 @@ public interface UserRepository {
      * @return список пользователей
      */
     List<User> findAllUsers();
+
+    Optional<User> findById(Long id);
+
+    Optional<Long> findIdByEmail(String email);
 }

@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: slavbx
+      changes:
+        - sql:
+            sql: |
+              CREATE SCHEMA IF NOT EXISTS habittracker;
+#              CREATE SCHEMA IF NOT EXISTS habittracker_service;
+  - include:
+      file: db/changelog/changelog-create-tables.yaml
+  - include:
+      file: db/changelog/changelog-load-data.yaml
+  - include:
+      file: db/changelog/changelog-update-sequences.yaml

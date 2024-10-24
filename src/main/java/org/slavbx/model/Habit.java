@@ -10,6 +10,8 @@ import java.util.List;
  * дате создания и днях, когда привычка была выполнена
  */
 public class Habit {
+
+    Long id;
     /**
      * Название
      */
@@ -33,8 +35,7 @@ public class Habit {
     /**
      * Список дат, в которые привычка была выполнена
      */
-    private final List<LocalDate> completionDates;
-
+    private List<CompletionDate> completionDates;
     /**
      * Перечисление, представляющее частоту выполнения привычек
      */
@@ -56,6 +57,26 @@ public class Habit {
         this.user = user;
         this.createDate = LocalDate.now();
         this.completionDates = new ArrayList<>();
+    }
+
+    public Habit(Long id, String name, String desc, Frequency freq, User user) {
+        this.id = id;
+        this.name = name;
+        this.desc = desc;
+        this.freq = freq;
+        this.user = user;
+        this.createDate = LocalDate.now();
+        this.completionDates = new ArrayList<>();
+    }
+
+    public Habit(Long id, String name, String desc, Frequency freq, LocalDate createDate, User user, List<CompletionDate> completionDates) {
+        this.id = id;
+        this.name = name;
+        this.desc = desc;
+        this.freq = freq;
+        this.user = user;
+        this.createDate = createDate;
+        this.completionDates = completionDates;
     }
 
     public String getName() {
@@ -94,8 +115,20 @@ public class Habit {
         return createDate;
     }
 
-    public List<LocalDate> getCompletionDates() {
+    public List<CompletionDate> getCompletionDates() {
         return completionDates;
+    }
+
+    public void setCompletionDates(List<CompletionDate> completionDates) {
+        this.completionDates = completionDates;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override
