@@ -31,8 +31,8 @@ class HabitRepositoryCoreTest {
     @BeforeEach
     void init() {
         habitRepository = new HabitRepositoryJdbc(postgresContainer.getJdbcUrl(), "slav", "slav");
-        user = new User(1L,"user@mail.com", "psw", "username", User.Level.USER);
-        habit = new Habit("name", "desc", Habit.Frequency.DAILY, user);
+        user = User.builder().id(1L).email("user@mail.com").password("psw").name("username").level(User.Level.USER).build();
+        habit = Habit.builder().name("name").desc("desc").freq(Habit.Frequency.DAILY).user(user).build();
         habitRepository.save(habit);
     }
 

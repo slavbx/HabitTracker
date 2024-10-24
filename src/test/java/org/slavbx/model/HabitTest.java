@@ -11,9 +11,9 @@ class HabitTest {
     @Test
     @DisplayName("Проверка метода equals()")
     void testEquals() {
-        User user = new User("user@mail.com", "psw", "username", User.Level.USER);
-        Habit habit1 = new Habit("name", "desc", Habit.Frequency.DAILY, user);
-        Habit habit2 = new Habit("name", "desc", Habit.Frequency.DAILY, user);
+        User user = User.builder().email("user@mail.com").password("psw").name("username").level(User.Level.USER).build();
+        Habit habit1 = Habit.builder().name("name").desc("desc").freq(Habit.Frequency.DAILY).user(user).build();
+        Habit habit2 = Habit.builder().name("name").desc("desc").freq(Habit.Frequency.DAILY).user(user).build();
         assertThat(habit1).isEqualTo(habit2);
         assertThat(habit2).isEqualTo(habit1);
     }

@@ -35,8 +35,8 @@ class HabitServiceTest {
     void init() {
         HabitRepository habitRepository = new HabitRepositoryJdbc(postgresContainer.getJdbcUrl(), "slav", "slav");
         habitService = new HabitService(habitRepository);
-        user = new User(1L,"user@mail.com", "psw", "username", User.Level.USER);
-        habit = new Habit(1L, "name", "desc", Habit.Frequency.DAILY, user);
+        user = User.builder().email("user@mail.com").password("psw").name("username").level(User.Level.USER).build();
+        habit = Habit.builder().id(1L).name("name").desc("desc").freq(Habit.Frequency.DAILY).user(user).build();
     }
 
     @Test
@@ -79,8 +79,7 @@ class HabitServiceTest {
     void getCompletionsInPeriod() {
         habitService.markAsCompleted(habit);
         assertThat(habitService.getCompletionsInPeriod(habit, LocalDate.now().minusDays(2), LocalDate.now())).isEqualTo(1L);
-
-        habit = new Habit(2L, "name", "desc", Habit.Frequency.WEEKLY, user);
+        habit = Habit.builder().id(2L).name("name").desc("desc").freq(Habit.Frequency.WEEKLY).user(user).build();
         habitService.markAsCompleted(habit);
         assertThat(habitService.getCompletionsInPeriod(habit, LocalDate.now(), LocalDate.now().plusDays(6))).isEqualTo(1L);
     }

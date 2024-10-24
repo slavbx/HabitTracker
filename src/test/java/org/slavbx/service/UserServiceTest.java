@@ -34,7 +34,7 @@ class UserServiceTest {
     @Test
     @DisplayName("Проверка вызова метода сохранения пользователя")
     void save() {
-        User user = new User("user@mail.com", "psw", "username", User.Level.USER);
+        User user = User.builder().email("user@mail.com").password("psw").name("username").level(User.Level.USER).build();
         userService.save(user);
         assertThat(userService.findUserByEmail("user@mail.com")).isEqualTo(Optional.of(user));
     }
@@ -49,7 +49,7 @@ class UserServiceTest {
     @Test
     @DisplayName("Проверка входа пользователя в личный кабинет")
     void authorize() {
-        User user = new User("user@mail.com", "psw", "username", User.Level.USER);
+        User user = User.builder().email("user@mail.com").password("psw").name("username").level(User.Level.USER).build();
         userService.authorize("user@mail.com", "psw");
         assertThat(userService.getAuthorizedUser()).isEqualTo(user);
     }
@@ -57,7 +57,7 @@ class UserServiceTest {
     @Test
     @DisplayName("Проверка поиска пользователя по email")
     void findUserByEmail() {
-        User user = new User("user@mail.com", "psw", "username", User.Level.USER);
+        User user = User.builder().email("user@mail.com").password("psw").name("username").level(User.Level.USER).build();
         userService.save(user);
         assertThat(userService.findUserByEmail("user@mail.com")).isEqualTo(Optional.of(user));
     }
@@ -65,7 +65,7 @@ class UserServiceTest {
     @Test
     @DisplayName("Проверка выхода пользователя из личного кабинета")
     void unauthorize() {
-        User user = new User("user@mail.com", "psw", "username", User.Level.USER);
+        User user = User.builder().email("user@mail.com").password("psw").name("username").level(User.Level.USER).build();
         userService.authorize("user@mail.com", "psw");
         userService.unauthorize();
         assertThat(userService.getAuthorizedUser()).isNull();
