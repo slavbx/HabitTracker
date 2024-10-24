@@ -1,6 +1,8 @@
 package org.slavbx.service;
 
 
+import lombok.Getter;
+import lombok.Setter;
 import org.slavbx.model.User;
 import org.slavbx.repository.UserRepository;
 
@@ -19,7 +21,19 @@ public class UserService {
     private final UserRepository userRepository;
     /**
      * Авторизованный пользователь
+     * -- GETTER --
+     *  Возвращает авторизованного пользователя текущей сессии
+     *
+     *
+     * -- SETTER --
+     *  Устанавливает авторизованного пользователя для хранения сессии
+     *
+     @return авторизованный пользователь
+      * @param user пользователь, которого необходимо авторизовать
+
      */
+    @Setter
+    @Getter
     private User authorizedUser;
 
     /**
@@ -88,22 +102,6 @@ public class UserService {
     }
 
     /**
-     * Устанавливает авторизованного пользователя для хранения сессии
-     * @param user пользователь, которого необходимо авторизовать
-     */
-    public void setAuthorizedUser(User user) {
-        this.authorizedUser = user;
-    }
-
-    /**
-     * Возвращает авторизованного пользователя текущей сессии
-     * @return авторизованный пользователь
-     */
-    public User getAuthorizedUser() {
-        return this.authorizedUser;
-    }
-
-    /**
      * Производит завершение сессии авторизованного пользователя
      */
     public void unauthorize() {
@@ -127,7 +125,7 @@ public class UserService {
      * @param level    уровень нового пользователя
      */
     public void registerUser(String email, String password, String name, User.Level level) {
-        userRepository.save(new User(email, password, name, level));
+        userRepository.save(User.builder().email(email).password(password).name(name).level(level).build());
     }
 
 //    public void saveById(Long id, User user) {
